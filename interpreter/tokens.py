@@ -55,23 +55,23 @@ class TokenType(StrEnum):
 
 
 class Token:
-    def __init__(self, type: TokenType, literal: Optional[str] = None):
+    def __init__(self, type: TokenType, text: Optional[str] = None):
         self.__type = type
-        self.__literal = literal or type.value
+        self.__text = text or type.value
 
     @property
     def type(self):
         return self.__type
 
     @property
-    def literal(self):
-        return self.__literal
+    def text(self):
+        return self.__text
 
     def __repr__(self):
-        return f"Token(type={self.type.name}, literal='{self.literal}')"
+        return f"Token(type={self.type.name}, text='{self.text}')"
 
     def __str__(self):
-        return f"{self.type.name}('{self.literal}')"
+        return f"{self.type.name}('{self.text}')"
 
 
 BUILTIN_KEYWORDS = {tt.value: tt for tt in TokenType if tt.value[0] in ascii_letters}

@@ -77,6 +77,8 @@ def _read_number(seq: str, start_position: int) -> str:  # 整数: 42, 0x12AB �
         end_position = start_position + 2
         while end_position < len(seq) and seq[end_position] in "0123456789abcdefABCDEF":
             end_position += 1
+        if end_position - start_position <= 2:
+            raise LexerError(f"Invalid hex number: {seq[start_position:end_position]}")
         return seq[start_position:end_position]
     else:
         cnt_point = 0  # 小数点 <= 1
@@ -122,6 +124,8 @@ def __check_float(ch: str, cnt_point, cnt_e) -> tuple[int, int]:
     if ch == ".":
         if cnt_point >= 1:
             raise LexerError("The decimal point(`.`) can only appear once.")
+        if cnt_e >= 1:
+            raise LexerError("Scientific notation float (`e`), after `e` can not be floating-point.")
         return 1, cnt_e
     elif ch == "e" or ch == "E":
         if cnt_e >= 1:

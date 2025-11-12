@@ -1,4 +1,4 @@
-from interpreter.lexer import Lexer
+from interpreter import Lexer, Parser
 
 namespace = {}
 
@@ -23,6 +23,11 @@ def repl(prompt="zlang>>> "):
                 lexer = Lexer(raw_input[6:-1])
                 for token in lexer:
                     print(token)
+            if raw_input.startswith("Parser("):
+                lexer = Lexer(raw_input[7:-1])
+                program = Parser(lexer).parse()
+                for stmt in program:
+                    print(f"{stmt!r}")
         except Exception as e:
             print(e)
 

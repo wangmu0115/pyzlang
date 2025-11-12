@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING
 from _import_utils import import_attr
 
 if TYPE_CHECKING:
+    from lexer import Lexer
+    from parser import Parser
     from tokens import BUILTIN_KEYWORDS, BUILTIN_SYMBOLS, Token, TokenType
 
 __all__ = [
@@ -10,6 +12,8 @@ __all__ = [
     "BUILTIN_SYMBOLS",
     "Token",
     "TokenType",
+    "Lexer",
+    "Parser",
 ]
 
 _dynamic_imports = {
@@ -17,6 +21,8 @@ _dynamic_imports = {
     "BUILTIN_SYMBOLS": "tokens",
     "Token": "tokens",
     "TokenType": "tokens",
+    "Lexer": "lexer",
+    "Parser": "parser",
 }
 
 
