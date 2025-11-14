@@ -25,7 +25,7 @@ class Lexer:
                     operator = _read_operator(self.input, position)
                     position += len(operator) - 1
                     yield Token(BUILTIN_SYMBOLS[operator])
-                case "," | ";" | "(" | ")" | "{" | "}" | "[" | "]":
+                case "," | ";" | "?" | ":" | "(" | ")" | "{" | "}" | "[" | "]":
                     yield Token(BUILTIN_SYMBOLS[ch])
                 case _:
                     if _is_letter(ch):  # identifier

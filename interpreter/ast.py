@@ -1,5 +1,7 @@
 from typing import Generic, Optional, TypeVar
 
+from interpreter import Token
+
 
 class Node:  # AST 节点，分为语句和表达式
     def __repr__(self):
@@ -68,4 +70,45 @@ class FloatLiteralExpression(LiteralExpression[float]): ...
 class BoolLiteralExpression(LiteralExpression[bool]): ...
 
 
-class StrLiteralExpression(LiteralExpression[str]): ...
+class StrLiteralExpression(LiteralExpression[str]):
+    def __str__(self):
+        return f'"{self.literal}"'
+
+
+class UnaryOperatorExpression(Expression):
+    def __init__(self, operator: Token, right: Expression):
+        self.operator = operator
+        self.right = right
+
+    def __str__(self):
+        return f"({self.operator.text}{str(self.right)})"
+
+
+class BinaryOperatorExpression(Expression):
+    def __init__(self, left: Expression, operator: Token, right: Expression):
+        self.left = left
+        self.operator = operator
+        self.right = right
+
+    def __str__(self):
+        return f"({str(self.left)} {self.operator.text} {str(self.right)})"
+
+
+class AssignExpression(Expression):
+    def __init__(self, name: str, operator: Token, right: Expression):
+        self.name = name
+        self.operator = operator
+        self.right = right
+
+    def __str__(self):
+        return f"({self.name} {self.operator.text} {str(self.right)})"
+
+
+class ConditionalExpression(Expression):
+    def __init__(self, condition: Expression, consequence: Expression, alternative: Expression):
+        self.condition = condition
+        self.consequence = consequence
+        self.alternative = alternative
+
+    def __str__(self):
+        return f"({str(self.condition)} ? {str(self.consequence)} : {str(self.alternative)})"

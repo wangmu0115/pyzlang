@@ -9,13 +9,12 @@ from interpreter.ast import (
 )
 from interpreter.parselets import (
     InfixParselet,
+    ParserError,
+    Precedence,
     PrefixParselet,
     standard_infix_parselets,
     standard_prefix_parselets,
 )
-
-
-class ParserError(Exception): ...
 
 
 class Parser:
@@ -32,15 +31,15 @@ class Parser:
         else:
             raise NotImplementedError()
 
-    def parse(self, debug: bool = False) -> Program:
-        self.__init_parser(debug)
+    def parse(self) -> Program:
+        self.__init_parser()
         program = Program()
 
         while self.curr_token is not None and self.curr_token.type != TokenType.EOF:
             stmt = self.parse_statement()
             if stmt is not None:
                 program.append(stmt)
-            self.__consume_next()  # move `curr_token` to next statement
+            self.consume_next()  # move `curr_token` to next statement
         return program
 
     def parse_statement(self) -> Statement:
@@ -56,28 +55,35 @@ class Parser:
             case _:
                 return self._parse_expr_stmt()
 
-    def parse_expression(self) -> Expression:
+    def parse_expression(self, precedence: Precedence = Precedence.DEFAULT) -> Expression:
         prefix = self.prefix_parselets.get(self.curr_token.type, None)
         if prefix is None:
             raise ParserError(f"Could not parse {self.curr_token}")
-        return prefix.parse(self, self.curr_token)
+        left = prefix.parse(self, self.curr_token)
+
+        infix = self.infix_parselets.get(self.peek_token.type, None)  # check infix operator exist or not
+        while infix is not None and precedence < infix.precedence:
+            self.consume_next()  # move to the infix operator
+            left = infix.parse(self, left, self.curr_token)
+            infix = self.infix_parselets.get(self.peek_token.type, None)
+        return left
+
+    def consume_next(self):
+        self.curr_token = self.peek_token
+        self.peek_token = next(self.tokens, None)
 
     def _parse_expr_stmt(self) -> ExprStatement:
-        expr = self.parse_expression()
+        expr = self.parse_expression(Precedence.DEFAULT)
 
-        self.__end_statement()  # move to end of statement
+        self.__end_statement()  # move to the end of statement
         return ExprStatement(expr)
 
-    def __init_parser(self, debug):
+    def __init_parser(self):
         self.tokens = iter(self.lexer)
         self.curr_token = next(self.tokens, None)
         self.peek_token = next(self.tokens, None)
 
-    def __consume_next(self):
-        self.curr_token = self.peek_token
-        self.peek_token = next(self.tokens, None)
-
     def __end_statement(self, expected: TokenType = TokenType.SEMICOLON):
-        self.__consume_next()
+        self.consume_next()
         if self.curr_token is None or self.curr_token.type != expected:
             raise ParserError(f"Statement must end with `{expected.value}`.")

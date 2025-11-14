@@ -27,7 +27,7 @@ def repl(prompt="zlang>>> "):
                 lexer = Lexer(raw_input[7:-1])
                 program = Parser(lexer).parse()
                 for stmt in program:
-                    print(f"{stmt!r}")
+                    print(f"{stmt!s}")
         except Exception as e:
             print(e)
 

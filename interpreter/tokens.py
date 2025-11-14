@@ -36,6 +36,8 @@ class TokenType(StrEnum):
 
     COMMA = ","
     SEMICOLON = ";"
+    QUESTION = "?"
+    COLON = ":"
 
     LPAREN = "("
     RPAREN = ")"
